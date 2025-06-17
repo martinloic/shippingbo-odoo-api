@@ -30,7 +30,7 @@ const odoo = await connectToOdoo();
       ['name', 'ilike', 'QF/OUT/'],
       ['shippingbo_id', '!=', false]
     ],
-    ['id', 'name', 'shippingbo_id'],
+    ['id', 'name', 'shippingbo_id', 'state'],
     0, 1
   ]) as OdooOrder[];
 
