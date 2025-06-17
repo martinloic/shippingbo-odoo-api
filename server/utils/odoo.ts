@@ -1,5 +1,9 @@
 import Odoo from 'async-odoo-xmlrpc';
 
+/**
+ *
+ * @returns Promise<Odoo> - Returns an instance of the Odoo client
+ */
 export async function connectToOdoo() {
   const odoo = new Odoo({
     url: process.env.ODOO_URL,
@@ -19,8 +23,12 @@ export async function connectToOdoo() {
   }
 }
 
+/**
+ *
+ * @returns Promise<OdooOrder[]> - Returns a list of orders from Odoo
+ */
 export async function getOdooOrders() {
-const odoo = await connectToOdoo();
+  const odoo = await connectToOdoo();
   const orders = await odoo.execute_kw('stock.picking', 'search_read', [
     [
       '|',
@@ -37,6 +45,12 @@ const odoo = await connectToOdoo();
   return orders;
 }
 
+/**
+ *
+ * @param orderId - The ID of the order to update
+ * @param status - The new status to set for the order (default is 'done')
+ * @returns Promise<any> - Returns the result of the update operation
+ */
 export async function updateOrderStatus(orderId: number, status: string = 'done') {
   const odoo = await connectToOdoo();
 
