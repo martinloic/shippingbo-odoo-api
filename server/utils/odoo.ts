@@ -43,7 +43,9 @@ export async function updateOrderStatus(orderId: number, status: string = 'done'
   const result = await odoo.execute_kw('stock.picking', 'write', [
     [orderId],
     {
-      state: 'done'
+      state: status
     }
   ]);
+
+  return result;
 }
