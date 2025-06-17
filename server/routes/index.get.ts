@@ -1,5 +1,5 @@
-import { getOdooOrders, updateOrderStatus } from '~/utils/odoo/connect';
-import { getShippingboOrder } from '~/utils/shippingbo/connect';
+import { getOdooOrders, updateOrderStatus } from '~/utils/odoo';
+import { getShippingboOrder } from '~/utils/shippingbo';
 
 export default defineEventHandler(async (event) => {
     const orders = await getOdooOrders();
