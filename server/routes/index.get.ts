@@ -6,12 +6,17 @@ export default defineEventHandler(async (event) => {
 
     const updatedOrders:OdooOrder[] = [];
 
+    let i = 0;
+
     for (const order of orders) {
       try {
         const shippingbo = await getShippingboOrder(order.shippingbo_id);
 
-        if(shippingbo.state === 'shipped') {
-          await updateOrderStatus(order.id, 'done');
+        const tracking_url = shippingbo.order.shipments[0]?.tracking_url;
+
+        if(shippingbo.order.state === 'shipped') {
+          console.log(shippingbo.order);
+          await updateOrderStatus(order.id, 'done', tracking_url);
           updatedOrders.push(order);
           break;
         }
@@ -19,6 +24,7 @@ export default defineEventHandler(async (event) => {
         console.error(`Error fetching Shippingbo order for ID ${order.shippingbo_id}:`, error);
       }
       await new Promise(resolve => setTimeout(resolve, 500));
+      i++;
     }
     return updatedOrders;
 });
