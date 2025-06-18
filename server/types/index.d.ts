@@ -5,9 +5,14 @@ interface OdooOrder {
 }
 
 interface ShippingboOrder {
-  id: number;
-  state: "dispatched" | "shipped" | "canceled" | (string & {});
-  shipments: {
-    tracking_url?: string;
+  order: {
+    id: number;
+    state: "dispatched" | "shipped" | "canceled" | (string & {});
+    shipments: Shipments[];
   }
+}
+
+interface Shipments {
+  tracking_url?: string;
+  total_weight?: number;
 }
