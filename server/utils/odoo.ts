@@ -38,8 +38,8 @@ export async function getOdooOrders() {
       ['name', 'ilike', 'QF/OUT/'],
       ['shippingbo_id', '!=', false]
     ],
-    ['id', 'name', 'shippingbo_id', 'state'],
-    0, 1
+    ['id', 'name', 'shippingbo_id', 'state']
+    // 0, 1
   ]) as OdooOrder[];
 
   return orders;
@@ -51,13 +51,14 @@ export async function getOdooOrders() {
  * @param status - The new status to set for the order (default is 'done')
  * @returns Promise<any> - Returns the result of the update operation
  */
-export async function updateOrderStatus(orderId: number, status: string = 'done') {
+export async function updateOrderStatus(orderId: number, status: string = 'done', tracking_url?: string) {
   const odoo = await connectToOdoo();
 
   const result = await odoo.execute_kw('stock.picking', 'write', [
     [orderId],
     {
-      state: status
+      state: status,
+      shippingbo_url_tracking: tracking_url,
     }
   ]);
 
