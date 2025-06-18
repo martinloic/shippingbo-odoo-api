@@ -4,7 +4,7 @@ interface OdooOrder {
   shippingbo_id: string;
 }
 
-interface ShippingboOrder {
+interface ShippingBoOrder {
   order: {
     id: number;
     state: "dispatched" | "shipped" | "canceled" | (string & {});
