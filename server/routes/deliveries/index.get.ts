@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
           console.log(shippingbo.order);
           await updateOrderStatus(order.id, 'done', tracking_url);
           updatedOrders.push(order);
-          break;
+          // break;
         }
       } catch (error) {
         console.error(`Error fetching Shippingbo order for ID ${order.shippingbo_id}:`, error);
