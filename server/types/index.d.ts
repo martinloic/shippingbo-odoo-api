@@ -7,4 +7,7 @@ interface OdooOrder {
 interface ShippingboOrder {
   id: number;
   state: "dispatched" | "shipped" | "canceled" | (string & {});
+  shipments: {
+    tracking_url?: string;
+  }
 }
