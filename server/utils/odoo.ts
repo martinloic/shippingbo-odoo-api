@@ -51,8 +51,11 @@ export async function getOdooOrders() {
  * @param status - The new status to set for the order (default is 'done')
  * @returns Promise<any> - Returns the result of the update operation
  */
-export async function updateOrderStatus(orderId: number, status: string = 'done', tracking_url?: string) {
+export async function updateOrderStatus(order:OdooOrder, status: string = 'done') {
   const odoo = await connectToOdoo();
+
+  const orderId = order.id;
+  const tracking_url = order.shippingbo_id;
 
   const result = await odoo.execute_kw('stock.picking', 'write', [
     [orderId],

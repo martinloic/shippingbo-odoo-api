@@ -12,13 +12,11 @@ export default defineEventHandler(async (event) => {
       try {
         const shippingbo = await getShippingboOrder(order.shippingbo_id);
 
-        const tracking_url = shippingbo.order.shipments[0]?.tracking_url;
-
         if(shippingbo.order.state === 'shipped') {
-          console.log(shippingbo.order);
-          await updateOrderStatus(order.id, 'done', tracking_url);
+          // console.log(shippingbo.order);
+          await updateOrderStatus(order, 'done');
           updatedOrders.push(order);
-          // break;
+          break;
         }
       } catch (error) {
         console.error(`Error fetching Shippingbo order for ID ${order.shippingbo_id}:`, error);
