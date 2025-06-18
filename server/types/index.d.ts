@@ -9,6 +9,7 @@ interface ShippingboOrder {
     id: number;
     state: "dispatched" | "shipped" | "canceled" | (string & {});
     shipments: Shipments[];
+    origin_ref: string;
   }
 }
 

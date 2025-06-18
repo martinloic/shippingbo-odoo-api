@@ -59,10 +59,15 @@ export async function updateOrderStatus(order:OdooOrder, status: string = 'done'
 
   const result = await odoo.execute_kw('stock.picking', 'write', [
     [orderId],
-    {
-      state: status,
-      shippingbo_url_tracking: tracking_url,
-    }
+    { shippingbo_url_tracking: tracking_url }
+  ]);
+
+  await odoo.execute_kw('stock.picking', 'action_assign', [
+    [orderId],
+  ]);
+
+  await odoo.execute_kw('stock.picking', 'button_validate', [
+    [orderId],
   ]);
 
   return result;
