@@ -23,11 +23,11 @@ export async function getTodayShippingBoOrders():Promise<ShippingBoOrder[] | nul
   const url = "https://app.shippingbo.com/orders";
 
   // Calculate the start and end of the day in UTC
-  const today = new Date('2025-06-01');
+  const today = new Date();
   const timeZone = 'UTC';
 
-  const todayStartOfDay = formatISO(toZonedTime(startOfDay(today), timeZone));
-  const todayEndOfDay = formatISO(toZonedTime(endOfDay(today), timeZone));
+  const todayStartOfDay = formatISO(startOfDay(today), { representation: 'complete' });
+  const todayEndOfDay = formatISO(endOfDay(today), { representation: 'complete' });
 
   console.log(`Fetching orders from ${todayStartOfDay} to ${todayEndOfDay}`);
 
