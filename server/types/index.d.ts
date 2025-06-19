@@ -4,13 +4,14 @@ interface OdooOrder {
   shippingbo_id: string;
 }
 
-interface ShippingboOrder {
-  order: {
+interface ShippingBoOrder {
+  // order: {
     id: number;
     state: "dispatched" | "shipped" | "canceled" | (string & {});
     shipments: Shipments[];
     origin_ref: string;
-  }
+    source: string
+  // }
 }
 
 interface Shipments {

@@ -1,0 +1,15 @@
+meta {
+  name: checkOrderDelivery
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/deliveries
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-API-KEY: 6t9m3rXObdyF7cTF9RWsGiSKo6qA3czsMSsixlIz
+}
