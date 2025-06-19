@@ -1,26 +1,18 @@
-import Odoo from 'async-odoo-xmlrpc';
+import OdooJSONRpc, { isCredentialsResponse } from '@fernandoslim/odoo-jsonrpc';
 
-/**
- *
- * @returns Promise<Odoo> - Returns an instance of the Odoo client
- */
 export async function connectToOdoo() {
-  const odoo = new Odoo({
-    url: process.env.ODOO_URL,
-    port: process.env.ODOO_PORT || 443,
+    //@ts-ignore-next-line
+    const odoo = new OdooJSONRpc.default({
+    baseUrl: process.env.ODOO_URL,
+    port: Number(process.env.ODOO_PORT) || 443,
     db: process.env.ODOO_DB,
     username: process.env.ODOO_USERNAME,
-    password: process.env.ODOO_PASSWORD
+    apiKey: process.env.ODOO_PASSWORD
   });
 
-  try {
-    await odoo.connect();
-    console.log('Connected to Odoo');
-    return odoo;
-  } catch (error) {
-    console.error('Failed to connect to Odoo:', error);
-    throw error;
-  }
+  await odoo.connect();
+
+  return odoo;
 }
 
 /**
@@ -29,18 +21,15 @@ export async function connectToOdoo() {
  */
 export async function getOdooOrders() {
   const odoo = await connectToOdoo();
-  const orders = await odoo.execute_kw('stock.picking', 'search_read', [
-    [
-      '|',
-      ['state', '=', 'confirmed'],
-      ['state', '=', 'assigned'],
-      '&',
-      ['name', 'ilike', 'QF/OUT/'],
-      ['shippingbo_id', '!=', false]
-    ],
-    ['id', 'name', 'shippingbo_id', 'state']
-    // 0, 1
-  ]) as OdooOrder[];
+
+  const orders = await odoo.searchRead('stock.picking', [
+    '|',
+    ['state', '=', 'confirmed'],
+    ['state', '=', 'assigned'],
+    '&',
+    ['name', 'ilike', 'QF/OUT/'],
+    ['shippingbo_id', '!=', false]
+  ], ['id', 'name', 'shippingbo_id', 'state']) as OdooOrder[];
 
   return orders;
 }
@@ -56,19 +45,65 @@ export async function updateOrderStatus(order:OdooOrder, tracking_ref: string, s
 
   const orderId = order.id;
 
-  const result = await odoo.execute_kw('stock.picking', 'write', [
-    [orderId],
-    { shippingbo_url_tracking: tracking_ref }
-  ]);
+  const result = await odoo.update('stock.picking', orderId, {
+    shippingbo_url_tracking: tracking_ref
+  });
 
-  const assignResult = await odoo.execute_kw('stock.picking', 'action_assign', [
-    [orderId],
-  ]);
+  const assignResult = await odoo.action('stock.picking', 'action_assign', [orderId]);
 
   console.log('Assign result:', assignResult);
-  await odoo.execute_kw('stock.picking', 'button_validate', [
-    [orderId],
-  ]);
+
+  await odoo.action('stock.picking', 'button_validate', [orderId]);
 
   return result;
+}
+
+
+export async function findOdooOrderWithShippingBo(shippingboId: number): Promise<boolean> {
+  const odoo = await connectToOdoo();
+
+  const orderList = await odoo.searchRead('stock.picking', [
+    ['shippingbo_id', '=', shippingboId]
+  ], ['id', 'origin', 'sale_id']);
+
+  if( orderList.length === 0) {
+    console.log('No order found with ShippingBo ID:', shippingboId);
+    return false;
+  }
+  console.log(`Order found with ShippingBo ID: ${shippingboId} - ${orderList[0].sale_id[1]}`);
+  return true;
+}
+
+export async function createOrderFromShippingBo(shippingboOrder:ShippingBoOrder):Promise <OdooOrder | null> {
+  const odoo = await connectToOdoo();
+
+  const orderList = await odoo.call_kw('shippingbo.import.order', 'web_save', [
+    [],
+    { order_ids_text: shippingboOrder.id }
+  ], {
+    specification: {
+      order_ids_text: {}
+    }
+  });
+
+  console.log(orderList);
+
+  await odoo.call_kw('shippingbo.import.order', 'action_import_orders', [
+    [orderList[0].id]
+  ]);
+
+  const createdOrder = await odoo.searchRead('stock.picking', [
+    ['shippingbo_id', '=', shippingboOrder.id]],
+    ['id', 'origin', 'sale_id'],
+  );
+
+  console.log('Created order:', createdOrder);
+
+  if(createdOrder.length > 0) {
+    await odoo.update('sale.order', createdOrder[0].sale_id[0], {
+      user_id: 1
+    });
+  }
+
+  return createdOrder || null;
 }
