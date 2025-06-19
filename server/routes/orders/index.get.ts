@@ -19,7 +19,7 @@ export default defineEventHandler(async () => {
     }
   }
   if(ordersCreated.length === 0) {
-    return { message: 'No new orders to import today.' };
+    return { message: 'No new orders to import for now.' };
   }
   return ordersCreated;
 });
