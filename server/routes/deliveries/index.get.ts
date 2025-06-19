@@ -10,13 +10,13 @@ export default defineEventHandler(async (event) => {
 
     for (const order of orders) {
       try {
-        const shippingbo = await getShippingboOrder(order.shippingbo_id);
+        const shippingboOrder = await getShippingboOrder(order.shippingbo_id);
         console.log(`Processing order ID: ${order.id} - ${i} / ${orders.length}`);
 
-        const tracking_ref = shippingbo.order.shipments[0]?.tracking_url;
+        const tracking_ref = shippingboOrder.shipments[0]?.tracking_url;
 
-        if(shippingbo.order.state === 'shipped') {
-          console.log(shippingbo.order.origin_ref);
+        if(shippingboOrder.state === 'shipped') {
+          console.log(shippingboOrder.origin_ref);
           await updateOrderStatus(order, tracking_ref, 'done');
           updatedOrders.push(order);
           // break;
