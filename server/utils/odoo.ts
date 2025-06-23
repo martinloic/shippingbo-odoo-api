@@ -108,7 +108,7 @@ export async function createOrderFromShippingBo(shippingboOrder:ShippingBoOrder)
   return createdOrder || null;
 }
 
-export async function createOrderFromShippingBoWebHook(id:number):Promise <OdooOrder | null> {
+export async function createOrderFromShippingBoWebHook(id:number, origin_ref:string):Promise <OdooOrder | null> {
   const odoo = await connectToOdoo();
 
   const orderList = await odoo.call_kw('shippingbo.import.order', 'web_save', [
@@ -126,15 +126,31 @@ export async function createOrderFromShippingBoWebHook(id:number):Promise <OdooO
 
   const createdOrder = await odoo.searchRead('stock.picking', [
     ['shippingbo_id', '=', id]],
-    ['id', 'origin', 'sale_id'],
+    ['id', 'origin', 'sale_id']
   );
 
-  console.log('Created order:', createdOrder);
+  if(createdOrder.length === 0) {
+    const searchOrder = await odoo.searchRead('stock.picking', [
+      ['origin', 'like', origin_ref]],
+      ['id', 'name', 'sale_id']
+    );
+
+    await odoo.update('sale.order', searchOrder[0].sale_id[0], {
+      user_id: 1
+    });
+
+    console.log('Created order from search:', searchOrder);
+
+    return searchOrder || null
+  }
 
   if(createdOrder.length > 0) {
     await odoo.update('sale.order', createdOrder[0].sale_id[0], {
       user_id: 1
     });
   }
+
+  console.log('Created order:', createdOrder);
+
   return createdOrder || null;
 }
