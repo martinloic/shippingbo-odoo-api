@@ -135,6 +135,16 @@ export async function createOrderFromShippingBoWebHook(id:number, origin_ref:str
       ['id', 'name', 'sale_id']
     );
 
+    if(searchOrder.length === 0) {
+      console.log('No order found with ShippingBo ID:', id);
+      return null;
+    }
+
+    await odoo.update('stock.picking', id, {
+      shippingbo_id: id,
+      shippingbo_is_exported: true
+    });
+
     await odoo.update('sale.order', searchOrder[0].sale_id[0], {
       user_id: 1
     });
