@@ -5,11 +5,18 @@ export default defineEventHandler(async (event) => {
   if (event) {
     const body = await readBody(event);
     // console.log('Request body:', body);
-    const newOrder = body.object.id;
+    const newOrder = body.object;
 
-    console.log('New order ShippingBo ID:', newOrder);
-    const order = await createOrderFromShippingBoWebHook(newOrder);
+    if(newOrder != null) {
+      console.log('New order ShippingBo ID:', newOrder);
 
-    return order;
+      if(newOrder.origin != "Odoo") {
+        const order = await createOrderFromShippingBoWebHook(newOrder.id);
+        return order;
+      }
+
+    } else {
+      console.log('No new order found in the request body.');
+    }
   }
 });

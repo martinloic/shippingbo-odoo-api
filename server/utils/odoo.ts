@@ -109,33 +109,33 @@ export async function createOrderFromShippingBo(shippingboOrder:ShippingBoOrder)
 }
 
 export async function createOrderFromShippingBoWebHook(id:number):Promise <OdooOrder | null> {
-  const odoo = await connectToOdoo();
+  // const odoo = await connectToOdoo();
 
-  const orderList = await odoo.call_kw('shippingbo.import.order', 'web_save', [
-    [],
-    { order_ids_text: id }
-  ], {
-    specification: {
-      order_ids_text: {}
-    }
-  });
+  // const orderList = await odoo.call_kw('shippingbo.import.order', 'web_save', [
+  //   [],
+  //   { order_ids_text: id }
+  // ], {
+  //   specification: {
+  //     order_ids_text: {}
+  //   }
+  // });
 
-  await odoo.call_kw('shippingbo.import.order', 'action_import_orders', [
-    [orderList[0].id]
-  ]);
+  // await odoo.call_kw('shippingbo.import.order', 'action_import_orders', [
+  //   [orderList[0].id]
+  // ]);
 
-  const createdOrder = await odoo.searchRead('stock.picking', [
-    ['shippingbo_id', '=', id]],
-    ['id', 'origin', 'sale_id'],
-  );
+  // const createdOrder = await odoo.searchRead('stock.picking', [
+  //   ['shippingbo_id', '=', id]],
+  //   ['id', 'origin', 'sale_id'],
+  // );
 
-  console.log('Created order:', createdOrder);
+  // console.log('Created order:', createdOrder);
 
-  if(createdOrder.length > 0) {
-    await odoo.update('sale.order', createdOrder[0].sale_id[0], {
-      user_id: 1
-    });
-  }
-
-  return createdOrder || null;
+  // if(createdOrder.length > 0) {
+  //   await odoo.update('sale.order', createdOrder[0].sale_id[0], {
+  //     user_id: 1
+  //   });
+  // }
+  return null;
+  // return createdOrder || null;
 }
