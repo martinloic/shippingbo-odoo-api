@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         const order = await createOrderFromShippingBoWebHook(newOrder.id);
         return order;
       } else {
-        console.log('Origin is Odoo, skipping.');
+        console.log(`${newOrder.origin_ref} - Origin is Odoo. No action taken.`);
       }
     } else {
       console.log('No new order found in the request body.');
