@@ -140,7 +140,7 @@ export async function createOrderFromShippingBoWebHook(id:number, origin_ref:str
       return null;
     }
 
-    await odoo.update('stock.picking', id, {
+    await odoo.update('stock.picking', searchOrder[0].id, {
       shippingbo_id: id,
       shippingbo_is_exported: true
     });
