@@ -1,5 +1,7 @@
 export default defineEventHandler(async (event) => {
+  console.log('Processing new order state from webhook...');
   if (event) {
+    console.log('Event received:', event);
     const body = await readBody(event);
     const newOrderState = body.object;
 
