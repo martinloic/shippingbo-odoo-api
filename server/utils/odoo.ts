@@ -44,7 +44,7 @@ export async function updateOrderStatus(order:OdooOrder, tracking_ref: string, s
   const odoo = await connectToOdoo();
 
   const orderId = order.id;
-
+  console.log('Updating order status for order ID:', orderId, 'with tracking ref:', tracking_ref);
   const result = await odoo.update('stock.picking', orderId, {
     shippingbo_url_tracking: tracking_ref
   });
