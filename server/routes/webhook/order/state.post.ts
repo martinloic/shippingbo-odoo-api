@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
     if(newOrderState != null) {
       if(newOrderState.state === 'shipped' && newOrderState.origin === 'Odoo') {
-        const updatedOrder = await updateOrderStatus(newOrderState.id, newOrderState.tracking_url, 'done');
+        const updatedOrder = await updateOrderStatus(newOrderState, newOrderState.tracking_url, 'done');
         return updatedOrder;
       }
     }
